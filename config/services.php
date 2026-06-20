@@ -40,4 +40,10 @@ return [
         'webhook' => env('DISCORD_WEBHOOK_URL'),
     ],
 
+    'deepseek' => [
+        'key' => env('DEEPSEEK_API_KEY'),
+        'base_url' => 'https://api.deepseek.com',
+        'model' => 'deepseek-chat',
+    ],
+
 ];
