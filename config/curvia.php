@@ -16,6 +16,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Minimum scraped content length
+    |--------------------------------------------------------------------------
+    |
+    | Articles whose extracted body is shorter than this are treated as failed
+    | scrapes (paywall, JS-only, blocked) and left without content.
+    |
+    */
+
+    'min_content_chars' => 600,
+
+    /*
+    |--------------------------------------------------------------------------
     | Motorcycle keyword filter
     |--------------------------------------------------------------------------
     |
