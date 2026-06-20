@@ -46,6 +46,22 @@ class GeneratePostsTest extends TestCase
         $this->assertStringContainsString('Źródło: RideApart', $article->ai_post);
     }
 
+    public function test_it_strips_emoji_and_keeps_paragraphs(): void
+    {
+        $this->articleWithContent();
+        $this->fakeDeepSeek(
+            'Nowa Ducati 🏁 robi wrażenie',
+            "Pierwszy akapit o motocyklu. 🏁\n\nDrugi akapit z pytaniem? 👇\n\n#Motocykle #Ducati",
+        );
+
+        $this->artisan('curvia:generate-posts');
+
+        $article = NewsArticle::firstOrFail();
+        $this->assertDoesNotMatchRegularExpression('/[\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}]/u', $article->ai_post);
+        $this->assertStringNotContainsString('🏁', $article->ai_title);
+        $this->assertStringContainsString("Pierwszy akapit o motocyklu.\n\nDrugi akapit", $article->ai_post);
+    }
+
     public function test_it_truncates_an_overlong_title(): void
     {
         $this->articleWithContent();

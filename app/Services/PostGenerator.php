@@ -31,10 +31,29 @@ class PostGenerator
             throw new RuntimeException('Nieprawidłowa odpowiedź AI (brak title/post).');
         }
 
-        $title = mb_substr(trim((string) $data['title']), 0, (int) config('curvia.generation.title_max_chars', 90));
-        $post = trim((string) $data['post'])."\n\n──────────\nŹródło: ".$article->source_name;
+        $title = mb_substr($this->sanitize((string) $data['title']), 0, (int) config('curvia.generation.title_max_chars', 90));
+        $post = $this->sanitize((string) $data['post'])."\n\n──────────\nŹródło: ".$article->source_name;
 
         return ['title' => $title, 'post' => $post];
+    }
+
+    /**
+     * Strip emoji, emoticons and other graphic symbols - the posts must be
+     * plain text only - and tidy up the leftover whitespace.
+     */
+    private function sanitize(string $text): string
+    {
+        $text = preg_replace(
+            '/[\x{1F000}-\x{1FAFF}\x{2600}-\x{27BF}\x{2190}-\x{21FF}\x{2B00}-\x{2BFF}\x{2300}-\x{23FF}\x{FE00}-\x{FE0F}\x{1F1E6}-\x{1F1FF}\x{200D}\x{20E3}\x{2122}\x{2139}]/u',
+            '',
+            $text,
+        );
+
+        $text = preg_replace('/[ \t]+/', ' ', (string) $text);
+        $text = preg_replace('/ *\n/', "\n", (string) $text);
+        $text = preg_replace('/\n{3,}/', "\n\n", (string) $text);
+
+        return trim((string) $text);
     }
 
     private function systemPrompt(): string
@@ -48,11 +67,13 @@ class PostGenerator
 
         Zasady:
         - Nie pisz jak portal informacyjny ani jak suchy news. Pisz swobodnie i lekko, jak pasjonat do pasjonatów.
-        - Post ma zachęcać do komentarzy (np. krótkie pytanie do czytelników na końcu).
+        - Podziel post na 2-4 krótkie akapity oddzielone pustą linią, żeby dobrze się czytało.
+        - Post ma zachęcać do komentarzy (krótkie pytanie do czytelników na końcu).
         - Długość posta: od {$min} do {$max} znaków.
         - Zakończ 2-4 trafnymi hashtagami (np. #Motocykle #Ducati).
+        - PISZ WYŁĄCZNIE ZWYKŁYM TEKSTEM. Absolutnie żadnych emoji, emotikonów, ikon ani symboli graficznych.
         - NIE dodawaj linków ani adresów URL. NIE dodawaj linii ze źródłem - zostanie dopisana automatycznie.
-        - Tytuł: krótki i chwytliwy, po polsku, maksymalnie {$titleMax} znaków.
+        - Tytuł: krótki i chwytliwy, po polsku, maksymalnie {$titleMax} znaków, też bez emoji.
         - Trzymaj się faktów z artykułu, nie zmyślaj danych.
 
         Zwróć WYŁĄCZNIE obiekt JSON w formacie: {"title": "...", "post": "..."}
