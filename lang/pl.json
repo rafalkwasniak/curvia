@@ -5,5 +5,12 @@
     "Remember me": "Zapamiętaj mnie",
     "Log out": "Wyloguj",
     "Dashboard": "Panel",
-    "Welcome, :name": "Witaj, :name"
+    "Welcome, :name": "Witaj, :name",
+    "My account": "Moje dane",
+    "Name": "Nazwa",
+    "New password": "Nowe hasło",
+    "Confirm new password": "Powtórz nowe hasło",
+    "Leave blank to keep your current password.": "Zostaw puste, aby nie zmieniać hasła.",
+    "Save changes": "Zapisz zmiany",
+    "Changes saved.": "Zapisano zmiany."
 }
