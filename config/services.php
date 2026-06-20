@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'discord' => [
+        // Incoming webhook URL for the error-reporting channel.
+        'webhook' => env('DISCORD_WEBHOOK_URL'),
+    ],
+
 ];
