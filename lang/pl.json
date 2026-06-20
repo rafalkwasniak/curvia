@@ -30,5 +30,22 @@
     "Remove this source?": "Usunąć to źródło?",
     "No sources yet.": "Brak źródeł.",
     "Source added.": "Dodano źródło.",
-    "Source removed.": "Usunięto źródło."
+    "Source removed.": "Usunięto źródło.",
+    "Articles": "Artykuły",
+    "Title": "Tytuł",
+    "Source": "Źródło",
+    "Date": "Data",
+    "No generated posts yet.": "Brak wygenerowanych postów.",
+    "Back to list": "Powrót do listy",
+    "Original": "Oryginał",
+    "Generated post": "Wygenerowany post",
+    "Open original article": "Otwórz oryginalny artykuł",
+    "Approve": "Akceptuj",
+    "Reject": "Odrzuć",
+    "Regenerate": "Generuj ponownie",
+    "Post approved.": "Post zaakceptowany.",
+    "Post rejected.": "Post odrzucony.",
+    "Post regenerated.": "Post wygenerowany ponownie.",
+    "Generation failed, try again.": "Generowanie nie powiodło się, spróbuj ponownie.",
+    "No article content to generate from.": "Brak treści artykułu do wygenerowania."
 }
