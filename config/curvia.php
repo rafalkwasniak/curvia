@@ -28,6 +28,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI post generation
+    |--------------------------------------------------------------------------
+    |
+    | Shape of the Polish Facebook post DeepSeek produces from an article.
+    |
+    */
+
+    'generation' => [
+        'title_max_chars' => 90,
+        'post_min_chars' => 500,
+        'post_max_chars' => 800,
+        'content_limit_chars' => 6000,
+        'temperature' => 0.8,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Motorcycle keyword filter
     |--------------------------------------------------------------------------
     |
