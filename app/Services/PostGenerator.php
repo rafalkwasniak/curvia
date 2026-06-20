@@ -52,8 +52,10 @@ class PostGenerator
         $text = preg_replace('/[ \t]+/', ' ', (string) $text);
         $text = preg_replace('/ *\n/', "\n", (string) $text);
         $text = preg_replace('/\n{3,}/', "\n\n", (string) $text);
+        $text = trim((string) $text);
 
-        return trim((string) $text);
+        // Keep exactly one blank line before a trailing hashtag line.
+        return preg_replace('/\n+(#[^\n]+)$/u', "\n\n$1", $text);
     }
 
     private function systemPrompt(): string
@@ -70,7 +72,7 @@ class PostGenerator
         - Podziel post na 2-4 krótkie akapity oddzielone pustą linią, żeby dobrze się czytało.
         - Post ma zachęcać do komentarzy (krótkie pytanie do czytelników na końcu).
         - Długość posta: od {$min} do {$max} znaków.
-        - Zakończ 2-4 trafnymi hashtagami (np. #Motocykle #Ducati).
+        - Zakończ 2-4 trafnymi hashtagami w osobnej, ostatniej linii, poprzedzonej pustą linią (np. #Motocykle #Ducati).
         - PISZ WYŁĄCZNIE ZWYKŁYM TEKSTEM. Absolutnie żadnych emoji, emotikonów, ikon ani symboli graficznych.
         - NIE dodawaj linków ani adresów URL. NIE dodawaj linii ze źródłem - zostanie dopisana automatycznie.
         - Tytuł: krótki i chwytliwy, po polsku, maksymalnie {$titleMax} znaków, też bez emoji.

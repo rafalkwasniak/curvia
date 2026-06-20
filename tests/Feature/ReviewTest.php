@@ -23,7 +23,17 @@ class ReviewTest extends TestCase
             'ai_title' => 'Nowa Ducati robi wrażenie',
             'ai_post' => "Świeża Ducati wjeżdża z przytupem.\n\nŹródło: RideApart",
             'status' => ArticleStatus::WaitingReview,
+            'published_at' => now(),
         ]);
+    }
+
+    private function articleHtml(): string
+    {
+        $para = 'The new motorcycle pushes the class forward with a lighter frame and a sharper '
+            .'engine, and the electronics come straight from the race paddock for real control.';
+
+        return '<html><head><title>Bike</title></head><body><article><h1>Bike</h1>'
+            .str_repeat("<p>{$para}</p>", 6).'</article></body></html>';
     }
 
     public function test_guests_cannot_see_the_articles(): void
@@ -31,18 +41,18 @@ class ReviewTest extends TestCase
         $this->get('/articles')->assertRedirect('/login');
     }
 
-    public function test_list_shows_generated_posts_only(): void
+    public function test_list_shows_all_articles_newest_first(): void
     {
         $this->actingAs(User::factory()->create());
-        $this->generatedArticle();
         NewsArticle::create([
-            'source_name' => 'X', 'title' => 'Raw, not generated',
-            'url' => 'https://site.test/raw', 'status' => ArticleStatus::New,
+            'source_name' => 'Visordown', 'title' => 'Older raw article',
+            'url' => 'https://site.test/old', 'status' => ArticleStatus::New,
+            'published_at' => now()->subDay(),
         ]);
+        $this->generatedArticle(); // newer, generated
 
         $this->get('/articles')->assertOk()
-            ->assertSee('Nowa Ducati robi wrażenie')
-            ->assertDontSee('Raw, not generated');
+            ->assertSeeInOrder(['Nowa Ducati robi wrażenie', 'Older raw article']);
     }
 
     public function test_detail_shows_original_and_generated(): void
@@ -75,7 +85,7 @@ class ReviewTest extends TestCase
         $this->assertSame(ArticleStatus::Rejected, $article->refresh()->status);
     }
 
-    public function test_a_post_can_be_regenerated(): void
+    public function test_generate_reruns_for_an_article_with_content(): void
     {
         $this->actingAs(User::factory()->create());
         $article = $this->generatedArticle();
@@ -88,11 +98,34 @@ class ReviewTest extends TestCase
             ]),
         ]);
 
-        $this->post(route('articles.regenerate', $article));
+        $this->post(route('articles.generate', $article));
 
         $article->refresh();
         $this->assertSame('Zupełnie nowy tytuł', $article->ai_title);
-        $this->assertStringContainsString('nowa treść', $article->ai_post);
+        $this->assertSame(ArticleStatus::WaitingReview, $article->status);
+    }
+
+    public function test_generate_scrapes_content_for_a_new_article(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $article = NewsArticle::create([
+            'source_name' => 'Visordown', 'title' => 'Fresh one',
+            'url' => 'https://site.test/fresh', 'status' => ArticleStatus::New,
+        ]);
+        Http::fake([
+            'api.deepseek.com/*' => Http::response([
+                'choices' => [['message' => ['content' => json_encode([
+                    'title' => 'Polski tytuł', 'post' => 'Polski post #Moto',
+                ])]]],
+            ]),
+            '*' => Http::response($this->articleHtml()),
+        ]);
+
+        $this->post(route('articles.generate', $article));
+
+        $article->refresh();
+        $this->assertNotNull($article->content);
+        $this->assertSame('Polski tytuł', $article->ai_title);
         $this->assertSame(ArticleStatus::WaitingReview, $article->status);
     }
 }

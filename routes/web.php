@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/articles/{article}', [ReviewController::class, 'show'])->name('articles.show');
     Route::post('/articles/{article}/accept', [ReviewController::class, 'accept'])->name('articles.accept');
     Route::post('/articles/{article}/reject', [ReviewController::class, 'reject'])->name('articles.reject');
-    Route::post('/articles/{article}/regenerate', [ReviewController::class, 'regenerate'])->name('articles.regenerate');
+    Route::post('/articles/{article}/generate', [ReviewController::class, 'generate'])->name('articles.generate');
 
     Route::get('/rss', [RssSourceController::class, 'index'])->name('rss.index');
     Route::post('/rss', [RssSourceController::class, 'store'])->name('rss.store');

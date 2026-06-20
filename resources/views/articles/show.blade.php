@@ -29,30 +29,36 @@
 
     <div class="rounded-lg bg-white p-6 shadow-sm">
         <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Generated post') }}</h2>
-        <h3 class="mb-3 font-medium">{{ $article->ai_title }}</h3>
-        <div class="whitespace-pre-line rounded-md bg-gray-50 p-4 text-sm text-gray-800">{{ $article->ai_post }}</div>
+        @if ($article->ai_post)
+            <h3 class="mb-3 font-medium">{{ $article->ai_title }}</h3>
+            <div class="whitespace-pre-line rounded-md bg-gray-50 p-4 text-sm text-gray-800">{{ $article->ai_post }}</div>
+        @else
+            <p class="text-sm text-gray-500">{{ __('Not generated yet.') }}</p>
+        @endif
     </div>
 </div>
 
 <div class="mt-6 flex flex-wrap items-center gap-3">
-    <form method="POST" action="{{ route('articles.accept', $article) }}">
-        @csrf
-        <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
-            {{ __('Approve') }}
-        </button>
-    </form>
+    @if ($article->ai_post)
+        <form method="POST" action="{{ route('articles.accept', $article) }}">
+            @csrf
+            <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                {{ __('Approve') }}
+            </button>
+        </form>
 
-    <form method="POST" action="{{ route('articles.reject', $article) }}">
+        <form method="POST" action="{{ route('articles.reject', $article) }}">
+            @csrf
+            <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+                {{ __('Reject') }}
+            </button>
+        </form>
+    @endif
+
+    <form method="POST" action="{{ route('articles.generate', $article) }}">
         @csrf
         <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
-            {{ __('Reject') }}
-        </button>
-    </form>
-
-    <form method="POST" action="{{ route('articles.regenerate', $article) }}">
-        @csrf
-        <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
-            {{ __('Regenerate') }}
+            {{ $article->ai_post ? __('Regenerate') : __('Generate post') }}
         </button>
     </form>
 </div>

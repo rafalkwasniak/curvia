@@ -62,6 +62,16 @@ class GeneratePostsTest extends TestCase
         $this->assertStringContainsString("Pierwszy akapit o motocyklu.\n\nDrugi akapit", $article->ai_post);
     }
 
+    public function test_it_keeps_a_blank_line_before_hashtags(): void
+    {
+        $this->articleWithContent();
+        $this->fakeDeepSeek('Tytuł', "Treść posta z pytaniem do was?\n#Motocykle #Ducati");
+
+        $this->artisan('curvia:generate-posts');
+
+        $this->assertStringContainsString("pytaniem do was?\n\n#Motocykle #Ducati", NewsArticle::firstOrFail()->ai_post);
+    }
+
     public function test_it_truncates_an_overlong_title(): void
     {
         $this->articleWithContent();

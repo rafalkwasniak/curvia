@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ArticleStatus;
 use App\Models\NewsArticle;
+use App\Services\ArticleScraper;
 use App\Services\PostGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -14,9 +15,9 @@ class ReviewController extends Controller
     public function index(): View
     {
         return view('articles.index', [
-            'articles' => NewsArticle::whereNotNull('ai_post')
-                ->latest('published_at')
-                ->paginate(20),
+            'articles' => NewsArticle::orderByDesc('published_at')
+                ->orderByDesc('id')
+                ->paginate(10),
         ]);
     }
 
@@ -39,13 +40,20 @@ class ReviewController extends Controller
         return back()->with('status', __('Post rejected.'));
     }
 
-    public function regenerate(NewsArticle $article, PostGenerator $generator): RedirectResponse
+    public function generate(NewsArticle $article, ArticleScraper $scraper, PostGenerator $generator): RedirectResponse
     {
-        if ($article->content === null) {
-            return back()->with('error', __('No article content to generate from.'));
-        }
-
         try {
+            if ($article->content === null) {
+                $content = $scraper->scrape($article->url);
+
+                if ($content === null) {
+                    return back()->with('error', __('Could not fetch article content.'));
+                }
+
+                $article->content = $content;
+                $article->save();
+            }
+
             $generated = $generator->generate($article);
 
             $article->update([
@@ -54,7 +62,7 @@ class ReviewController extends Controller
                 'status' => ArticleStatus::WaitingReview,
             ]);
 
-            return back()->with('status', __('Post regenerated.'));
+            return back()->with('status', __('Post generated.'));
         } catch (Throwable) {
             return back()->with('error', __('Generation failed, try again.'));
         }

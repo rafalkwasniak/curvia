@@ -43,9 +43,11 @@
     "Approve": "Akceptuj",
     "Reject": "Odrzuć",
     "Regenerate": "Generuj ponownie",
+    "Generate post": "Generuj post",
+    "Not generated yet.": "Jeszcze nie wygenerowano.",
     "Post approved.": "Post zaakceptowany.",
     "Post rejected.": "Post odrzucony.",
-    "Post regenerated.": "Post wygenerowany ponownie.",
+    "Post generated.": "Post wygenerowany.",
     "Generation failed, try again.": "Generowanie nie powiodło się, spróbuj ponownie.",
-    "No article content to generate from.": "Brak treści artykułu do wygenerowania."
+    "Could not fetch article content.": "Nie udało się pobrać treści artykułu."
 }
