@@ -12,6 +12,7 @@
             <div class="flex items-center gap-1">
                 <span class="mr-3 font-semibold">{{ config('app.name') }}</span>
                 <a href="{{ route('dashboard') }}" class="{{ $navLink(request()->routeIs('dashboard')) }}">{{ __('Dashboard') }}</a>
+                <a href="{{ route('rss.index') }}" class="{{ $navLink(request()->routeIs('rss.*')) }}">{{ __('RSS sources') }}</a>
                 <a href="{{ route('profile.edit') }}" class="{{ $navLink(request()->routeIs('profile.*')) }}">{{ __('My account') }}</a>
             </div>
 
