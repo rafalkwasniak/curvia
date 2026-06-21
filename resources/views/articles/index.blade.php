@@ -27,7 +27,7 @@
                             @if ($article->ai_image_path)
                                 <img src="{{ Storage::disk('public')->url($article->ai_image_path) }}"
                                     alt="{{ $article->ai_title ?? $article->title }}"
-                                    class="h-11 w-20 rounded object-cover" style="object-fit:cover">
+                                    class="h-11 w-20 rounded object-cover">
                             @else
                                 <div class="flex h-11 w-20 items-center justify-center rounded bg-gray-100 text-xs text-gray-400">—</div>
                             @endif
@@ -43,7 +43,7 @@
                             {{ $article->status->label() }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500" style="white-space:nowrap">{{ $article->published_at?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $article->published_at?->format('Y-m-d') ?? '—' }}</td>
                 </tr>
             @empty
                 <tr>

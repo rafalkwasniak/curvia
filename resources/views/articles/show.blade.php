@@ -44,14 +44,14 @@
 
     @if ($article->ai_image_path)
         <img src="{{ Storage::disk('public')->url($article->ai_image_path) }}" alt="{{ $article->ai_title }}"
-            class="mb-4 w-full max-w-2xl rounded-md border border-gray-200" style="max-width:42rem">
+            class="mb-4 w-full max-w-2xl rounded-md border border-gray-200">
     @else
         <p class="mb-4 text-sm text-gray-500">{{ __('No image yet.') }}</p>
     @endif
 
     @if ($article->ai_image_prompt)
         <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">{{ __('Image prompt (EN)') }}</p>
-        <p class="mb-4 max-w-2xl text-sm italic text-gray-600" style="max-width:42rem;font-style:italic">{{ $article->ai_image_prompt }}</p>
+        <p class="mb-4 max-w-2xl text-sm italic text-gray-600">{{ $article->ai_image_prompt }}</p>
     @endif
 
     <form method="POST" action="{{ route('articles.generate-image', $article) }}">
