@@ -5,7 +5,6 @@ namespace App\Enums;
 enum ArticleStatus: string
 {
     case New = 'new';
-    case Generated = 'generated';
     case WaitingReview = 'waiting_review';
     case Approved = 'approved';
     case Published = 'published';
@@ -15,7 +14,6 @@ enum ArticleStatus: string
     {
         return match ($this) {
             self::New => 'Nowy',
-            self::Generated => 'Wygenerowany',
             self::WaitingReview => 'Do akceptacji',
             self::Approved => 'Zaakceptowany',
             self::Published => 'Opublikowany',

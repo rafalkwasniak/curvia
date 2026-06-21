@@ -46,4 +46,9 @@ return [
         'model' => 'deepseek-chat',
     ],
 
+    'replicate' => [
+        'token' => env('REPLICATE_API_TOKEN'),
+        'base_url' => 'https://api.replicate.com/v1',
+    ],
+
 ];

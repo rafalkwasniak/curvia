@@ -38,14 +38,48 @@
     </div>
 </div>
 
+@if ($article->ai_post)
+<div class="mt-6 rounded-lg bg-white p-6 shadow-sm">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Generated image') }}</h2>
+
+    @if ($article->ai_image_path)
+        <img src="{{ Storage::disk('public')->url($article->ai_image_path) }}" alt="{{ $article->ai_title }}"
+            class="mb-4 w-full max-w-2xl rounded-md border border-gray-200" style="max-width:42rem">
+    @else
+        <p class="mb-4 text-sm text-gray-500">{{ __('No image yet.') }}</p>
+    @endif
+
+    @if ($article->ai_image_prompt)
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">{{ __('Image prompt (EN)') }}</p>
+        <p class="mb-4 max-w-2xl text-sm italic text-gray-600" style="max-width:42rem;font-style:italic">{{ $article->ai_image_prompt }}</p>
+    @endif
+
+    <form method="POST" action="{{ route('articles.generate-image', $article) }}">
+        @csrf
+        <button type="submit" class="rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">
+            {{ $article->ai_image_path ? __('Regenerate image') : __('Generate image') }}
+        </button>
+    </form>
+</div>
+@endif
+
 <div class="mt-6 flex flex-wrap items-center gap-3">
     @if ($article->ai_post)
-        <form method="POST" action="{{ route('articles.accept', $article) }}">
-            @csrf
-            <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
-                {{ __('Approve') }}
-            </button>
-        </form>
+        @if ($article->status === \App\Enums\ArticleStatus::Approved)
+            <form method="POST" action="{{ route('articles.unapprove', $article) }}">
+                @csrf
+                <button type="submit" class="rounded-md bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">
+                    {{ __('Back to review') }}
+                </button>
+            </form>
+        @else
+            <form method="POST" action="{{ route('articles.accept', $article) }}">
+                @csrf
+                <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                    {{ __('Approve') }}
+                </button>
+            </form>
+        @endif
 
         <form method="POST" action="{{ route('articles.reject', $article) }}">
             @csrf

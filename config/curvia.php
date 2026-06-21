@@ -45,6 +45,47 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI image generation
+    |--------------------------------------------------------------------------
+    |
+    | The illustrative image for a post. DeepSeek writes the English prompt and
+    | Replicate/FLUX renders it. flux-schnell is fast and cheap (~$0.003/image);
+    | swap to black-forest-labs/flux-dev for higher fidelity at higher cost.
+    | 16:9 is the closest preset to the 1200x630 og:image ratio - the exact crop
+    | and the "CURVIA" overlay are a later, local post-processing step.
+    |
+    */
+
+    'image' => [
+        // Models, cheapest to best: flux-schnell (~$0.003), flux-dev (~$0.025),
+        // flux-1.1-pro (~$0.04). All accept the same input keys used below.
+        // On schnell while building overlay/logo (cheap test renders); switch to
+        // flux-dev once the look is finished, for the realism it produces.
+        'model' => 'black-forest-labs/flux-schnell',
+        'aspect_ratio' => '16:9',
+        'output_format' => 'webp',
+        'output_quality' => 80,
+        'megapixels' => '1',
+        // The article text is only a visual cue here, so far less is sent than
+        // for the post rewrite - the prompt builder needs the gist, not the body.
+        'prompt_content_limit_chars' => 2000,
+        'temperature' => 0.7,
+
+        // Branded overlay drawn on top of the generated photo: a left-side dark
+        // scrim guarantees text legibility on any crop, then the CURVIA logo,
+        // the post title, a yellow accent rule and a fixed kicker line. Text is
+        // rendered here (never by the image model) so Polish glyphs stay correct.
+        'overlay' => [
+            'accent_color' => '#EAB227',
+            'logo_path' => 'img/curvia-logo.png',
+            'font_title' => 'resources/fonts/Poppins-SemiBold.ttf',
+            'font_kicker' => 'resources/fonts/Poppins-Regular.ttf',
+            'kicker' => 'Premiery • Technologie • Innowacje',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Motorcycle keyword filter
     |--------------------------------------------------------------------------
     |

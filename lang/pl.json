@@ -33,6 +33,7 @@
     "Source removed.": "Usunięto źródło.",
     "Articles": "Artykuły",
     "Title": "Tytuł",
+    "Image": "Zdjęcie",
     "Source": "Źródło",
     "Date": "Data",
     "No generated posts yet.": "Brak wygenerowanych postów.",
@@ -47,7 +48,17 @@
     "Not generated yet.": "Jeszcze nie wygenerowano.",
     "Post approved.": "Post zaakceptowany.",
     "Post rejected.": "Post odrzucony.",
+    "Back to review": "Do akceptacji",
+    "Moved back to review.": "Cofnięto do akceptacji.",
     "Post generated.": "Post wygenerowany.",
     "Generation failed, try again.": "Generowanie nie powiodło się, spróbuj ponownie.",
-    "Could not fetch article content.": "Nie udało się pobrać treści artykułu."
+    "Could not fetch article content.": "Nie udało się pobrać treści artykułu.",
+    "Generated image": "Wygenerowane zdjęcie",
+    "No image yet.": "Brak zdjęcia.",
+    "Image prompt (EN)": "Opis zdjęcia (EN)",
+    "Generate image": "Generuj zdjęcie",
+    "Regenerate image": "Generuj zdjęcie ponownie",
+    "Image generated.": "Zdjęcie wygenerowane.",
+    "Image generation failed, try again.": "Generowanie zdjęcia nie powiodło się, spróbuj ponownie.",
+    "Generate the post first.": "Najpierw wygeneruj post."
 }

@@ -13,8 +13,8 @@
     <table class="w-full text-left text-sm">
         <thead class="border-b border-gray-200 text-gray-500">
             <tr>
+                <th class="px-4 py-3 font-medium">{{ __('Image') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Title') }}</th>
-                <th class="px-4 py-3 font-medium">{{ __('Source') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Date') }}</th>
             </tr>
@@ -22,18 +22,28 @@
         <tbody class="divide-y divide-gray-100">
             @forelse ($articles as $article)
                 <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                        <a href="{{ route('articles.show', $article) }}">
+                            @if ($article->ai_image_path)
+                                <img src="{{ Storage::disk('public')->url($article->ai_image_path) }}"
+                                    alt="{{ $article->ai_title ?? $article->title }}"
+                                    class="h-11 w-20 rounded object-cover" style="object-fit:cover">
+                            @else
+                                <div class="flex h-11 w-20 items-center justify-center rounded bg-gray-100 text-xs text-gray-400">—</div>
+                            @endif
+                        </a>
+                    </td>
                     <td class="px-4 py-3 font-medium">
                         <a href="{{ route('articles.show', $article) }}" class="hover:underline">
                             {{ $article->ai_title ?? $article->title }}
                         </a>
                     </td>
-                    <td class="px-4 py-3 text-gray-500">{{ $article->source_name }}</td>
                     <td class="px-4 py-3">
                         <span class="rounded-full px-2 py-1 text-xs font-medium {{ $article->status->badgeClasses() }}">
                             {{ $article->status->label() }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-gray-500">{{ $article->published_at?->format('Y-m-d H:i') ?? '—' }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-gray-500" style="white-space:nowrap">{{ $article->published_at?->format('Y-m-d') ?? '—' }}</td>
                 </tr>
             @empty
                 <tr>

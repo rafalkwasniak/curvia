@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'rss_source_id', 'source_name', 'title', 'url', 'excerpt',
-    'content', 'published_at', 'ai_title', 'ai_post', 'status',
+    'content', 'published_at', 'ai_title', 'ai_post',
+    'ai_image_path', 'ai_image_prompt', 'status',
 ])]
 class NewsArticle extends Model
 {
