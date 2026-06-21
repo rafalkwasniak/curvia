@@ -63,6 +63,11 @@
 </div>
 @endif
 
+@if ($article->status === \App\Enums\ArticleStatus::Published)
+    <div class="mt-6 rounded-md bg-blue-100 px-4 py-3 text-sm font-medium text-blue-800">
+        {{ __('This post has been published to Facebook.') }}
+    </div>
+@else
 <div class="mt-6 flex flex-wrap items-center gap-3">
     @if ($article->ai_post)
         @if ($article->status === \App\Enums\ArticleStatus::Approved)
@@ -105,4 +110,5 @@
         </button>
     </form>
 </div>
+@endif
 @endsection

@@ -30,6 +30,7 @@ class PublishToFacebook extends Command
 
         $article = NewsArticle::where('status', ArticleStatus::Approved)
             ->whereNotNull('ai_image_path')
+            ->whereNull('posted_at')
             ->orderBy('published_at')
             ->orderBy('id')
             ->first();

@@ -57,6 +57,10 @@ class ReviewController extends Controller
             return back()->with('error', __('Generate the post and image first.'));
         }
 
+        if ($article->posted_at !== null) {
+            return back()->with('error', __('This post has already been published.'));
+        }
+
         if (! $publisher->isConfigured()) {
             return back()->with('error', __('Facebook is not configured.'));
         }
