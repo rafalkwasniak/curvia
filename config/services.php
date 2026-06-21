@@ -51,4 +51,10 @@ return [
         'base_url' => 'https://api.replicate.com/v1',
     ],
 
+    'facebook' => [
+        'page_id' => env('FACEBOOK_PAGE_ID'),
+        'access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+        'graph_url' => 'https://graph.facebook.com/v21.0',
+    ],
+
 ];

@@ -87,6 +87,15 @@
                 {{ __('Reject') }}
             </button>
         </form>
+
+        @if ($article->ai_image_path)
+            <form method="POST" action="{{ route('articles.publish', $article) }}">
+                @csrf
+                <button type="submit" class="rounded-md px-4 py-2 text-sm font-medium text-white" style="background-color:#1877F2">
+                    {{ __('Publish to Facebook') }}
+                </button>
+            </form>
+        @endif
     @endif
 
     <form method="POST" action="{{ route('articles.generate', $article) }}">

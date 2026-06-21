@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/articles/{article}/accept', [ReviewController::class, 'accept'])->name('articles.accept');
     Route::post('/articles/{article}/reject', [ReviewController::class, 'reject'])->name('articles.reject');
     Route::post('/articles/{article}/unapprove', [ReviewController::class, 'unapprove'])->name('articles.unapprove');
+    Route::post('/articles/{article}/publish', [ReviewController::class, 'publishNow'])->name('articles.publish');
     Route::post('/articles/{article}/generate', [ReviewController::class, 'generate'])->name('articles.generate');
     Route::post('/articles/{article}/generate-image', [ReviewController::class, 'generateImage'])->name('articles.generate-image');
 

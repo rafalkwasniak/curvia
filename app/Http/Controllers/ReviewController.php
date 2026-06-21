@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ArticleStatus;
 use App\Models\NewsArticle;
 use App\Services\ArticleScraper;
+use App\Services\FacebookPublisher;
 use App\Services\ImageGenerator;
 use App\Services\PostGenerator;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +49,30 @@ class ReviewController extends Controller
         $article->update(['status' => ArticleStatus::WaitingReview]);
 
         return back()->with('status', __('Moved back to review.'));
+    }
+
+    public function publishNow(NewsArticle $article, FacebookPublisher $publisher): RedirectResponse
+    {
+        if ($article->ai_post === null || $article->ai_image_path === null) {
+            return back()->with('error', __('Generate the post and image first.'));
+        }
+
+        if (! $publisher->isConfigured()) {
+            return back()->with('error', __('Facebook is not configured.'));
+        }
+
+        try {
+            $publisher->publish($article);
+
+            $article->update([
+                'status' => ArticleStatus::Published,
+                'posted_at' => now(),
+            ]);
+
+            return back()->with('status', __('Published to Facebook.'));
+        } catch (Throwable $e) {
+            return back()->with('error', 'Facebook: '.$e->getMessage());
+        }
     }
 
     public function generate(NewsArticle $article, ArticleScraper $scraper, PostGenerator $generator): RedirectResponse

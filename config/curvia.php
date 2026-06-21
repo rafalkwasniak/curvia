@@ -59,9 +59,9 @@ return [
     'image' => [
         // Models, cheapest to best: flux-schnell (~$0.003), flux-dev (~$0.025),
         // flux-1.1-pro (~$0.04). All accept the same input keys used below.
-        // On schnell while building overlay/logo (cheap test renders); switch to
-        // flux-dev once the look is finished, for the realism it produces.
-        'model' => 'black-forest-labs/flux-schnell',
+        // On flux-dev for production: clearly more realistic than schnell, worth
+        // the cost now that the overlay look is finished.
+        'model' => 'black-forest-labs/flux-dev',
         'aspect_ratio' => '16:9',
         'output_format' => 'webp',
         'output_quality' => 80,
@@ -81,6 +81,26 @@ return [
             'font_title' => 'resources/fonts/Poppins-SemiBold.ttf',
             'font_kicker' => 'resources/fonts/Poppins-Regular.ttf',
             'kicker' => 'Premiery • Technologie • Innowacje',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Facebook publishing
+    |--------------------------------------------------------------------------
+    |
+    | Approved posts are auto-published to Facebook inside these daily windows.
+    | The scheduler picks ONE random minute per window per day (deterministic
+    | from the date) and sends the oldest approved post then - at most one per
+    | window - so posts do not go out at the same minute every day. Times are
+    | "HH:MM" in the app timezone. Credentials live in config/services.php.
+    |
+    */
+
+    'facebook' => [
+        'windows' => [
+            ['09:00', '11:00'],
+            ['18:00', '20:00'],
         ],
     ],
 

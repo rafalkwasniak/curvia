@@ -16,3 +16,6 @@ Schedule::command('curvia:fetch-news')->hourly()->withoutOverlapping();
 // source sites gentle.
 Schedule::command('curvia:fetch-content --limit=1')->everyMinute()->withoutOverlapping();
 Schedule::command('curvia:generate-posts --limit=1')->everyMinute()->withoutOverlapping();
+
+// Auto-publish approved posts to Facebook at one random minute per time window.
+Schedule::command('curvia:publish-facebook')->everyMinute()->withoutOverlapping();
