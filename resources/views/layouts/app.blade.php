@@ -10,5 +10,6 @@
 </head>
 <body class="min-h-screen bg-gray-100 text-gray-900 antialiased">
     @yield('body')
+    @stack('scripts')
 </body>
 </html>

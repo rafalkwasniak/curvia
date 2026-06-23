@@ -28,7 +28,16 @@
     </div>
 
     <div class="rounded-lg bg-white p-6 shadow-sm">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Generated post') }}</h2>
+        <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">{{ __('Generated post') }}</h2>
+            @if ($article->ai_post)
+                <button type="button" id="tts-btn"
+                    data-label-play="{{ __('Listen') }}" data-label-stop="{{ __('Stop') }}"
+                    class="shrink-0 rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">
+                    &#9654; {{ __('Listen') }}
+                </button>
+            @endif
+        </div>
         @if ($article->ai_post)
             <h3 class="mb-3 font-medium">{{ $article->ai_title }}</h3>
             <div class="whitespace-pre-line rounded-md bg-gray-50 p-4 text-sm text-gray-800">{{ $article->ai_post }}</div>
@@ -37,6 +46,60 @@
         @endif
     </div>
 </div>
+
+@if ($article->ai_post)
+@push('scripts')
+<script>
+(function () {
+    const btn = document.getElementById('tts-btn');
+    if (!btn) return;
+
+    const synth = window.speechSynthesis;
+    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
+        btn.disabled = true;
+        btn.title = {{ Illuminate\Support\Js::from(__('Your browser does not support speech synthesis.')) }};
+        return;
+    }
+
+    const text = {{ Illuminate\Support\Js::from(trim(($article->ai_title ? $article->ai_title."\n\n" : '').$article->ai_post)) }};
+    const playLabel = '▶ ' + btn.dataset.labelPlay;
+    const stopLabel = '■ ' + btn.dataset.labelStop;
+    let keepAlive = null;
+
+    function reset() {
+        if (keepAlive) { clearInterval(keepAlive); keepAlive = null; }
+        btn.textContent = playLabel;
+    }
+
+    btn.addEventListener('click', function () {
+        if (synth.speaking) { synth.cancel(); reset(); return; }
+
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'pl-PL';
+        const voice = synth.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('pl'));
+        if (voice) u.voice = voice;
+        u.rate = 1;
+        u.onend = reset;
+        u.onerror = reset;
+
+        synth.cancel();
+        synth.speak(u);
+        btn.textContent = stopLabel;
+
+        // Chrome stops long utterances after ~15s; nudging it keeps it going.
+        keepAlive = setInterval(function () {
+            if (!synth.speaking) { reset(); return; }
+            synth.pause();
+            synth.resume();
+        }, 10000);
+    });
+
+    // Stop narration when leaving the page so it does not bleed into the next view.
+    window.addEventListener('beforeunload', function () { synth.cancel(); });
+})();
+</script>
+@endpush
+@endif
 
 @if ($article->ai_post)
 <div class="mt-6 rounded-lg bg-white p-6 shadow-sm">
