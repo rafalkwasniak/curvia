@@ -72,10 +72,11 @@ return [
 
     'image' => [
         // Models, cheapest to best: flux-schnell (~$0.003), flux-dev (~$0.025),
-        // flux-1.1-pro (~$0.04). All accept the same input keys used below.
-        // On flux-dev for production: clearly more realistic than schnell, worth
-        // the cost now that the overlay look is finished.
-        'model' => 'black-forest-labs/flux-dev',
+        // flux-1.1-pro (~$0.04). On flux-1.1-pro for production: richer materials,
+        // light and bokeh than flux-dev in side-by-side tests; the extra ~$0.015
+        // per image is negligible at this volume. Note: flux-1.1-pro ignores the
+        // go_fast/megapixels/num_outputs keys flux-dev uses - they are harmless.
+        'model' => 'black-forest-labs/flux-1.1-pro',
         'aspect_ratio' => '16:9',
         'output_format' => 'webp',
         'output_quality' => 80,
