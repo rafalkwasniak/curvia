@@ -30,9 +30,27 @@ class ReviewController extends Controller
         return view('articles.show', ['article' => $article]);
     }
 
-    public function accept(NewsArticle $article): RedirectResponse
+    public function accept(NewsArticle $article, ImageGenerator $generator): RedirectResponse
     {
         $article->update(['status' => ArticleStatus::Approved]);
+
+        // Approving a post means it is bound for publication, which needs an
+        // image - generate one now if missing so it is a single click. A failed
+        // render must not undo the approval, so it is reported but swallowed.
+        if ($article->ai_post !== null && $article->ai_image_path === null) {
+            try {
+                $generated = $generator->generate($article);
+
+                $article->update([
+                    'ai_image_path' => $generated['path'],
+                    'ai_image_prompt' => $generated['prompt'],
+                ]);
+            } catch (Throwable) {
+                return back()
+                    ->with('status', __('Post approved.'))
+                    ->with('error', __('Image generation failed, try again.'));
+            }
+        }
 
         return back()->with('status', __('Post approved.'));
     }
