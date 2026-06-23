@@ -28,6 +28,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum article age
+    |--------------------------------------------------------------------------
+    |
+    | Feeds only ingest articles published within this many days (counted from
+    | the start of the cut-off day). Older entries are skipped so stale news can
+    | never re-enter the review queue and skew later quality scoring. Entries
+    | without a parseable publish date are skipped as well.
+    |
+    */
+
+    'max_article_age_days' => 2,
+
+    /*
+    |--------------------------------------------------------------------------
     | AI post generation
     |--------------------------------------------------------------------------
     |

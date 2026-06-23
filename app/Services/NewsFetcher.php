@@ -24,13 +24,15 @@ class NewsFetcher
      */
     public function fetch(): array
     {
-        $summary = ['sources' => 0, 'created' => 0, 'filtered' => 0, 'duplicates' => 0, 'errors' => 0];
+        $summary = ['sources' => 0, 'created' => 0, 'filtered' => 0, 'too_old' => 0, 'duplicates' => 0, 'errors' => 0];
+
+        $cutoff = now()->subDays((int) config('curvia.max_article_age_days'))->startOfDay();
 
         foreach (RssSource::where('active', true)->get() as $source) {
             $summary['sources']++;
 
             try {
-                $this->fetchSource($source, $summary);
+                $this->fetchSource($source, $summary, $cutoff);
                 $source->last_fetched_at = now();
                 $source->save();
             } catch (Throwable $e) {
@@ -45,7 +47,7 @@ class NewsFetcher
     /**
      * @param  array<string, int>  $summary
      */
-    private function fetchSource(RssSource $source, array &$summary): void
+    private function fetchSource(RssSource $source, array &$summary, \DateTimeInterface $cutoff): void
     {
         $body = Http::withHeaders(['User-Agent' => config('curvia.user_agent')])
             ->timeout(20)
@@ -69,6 +71,14 @@ class NewsFetcher
                 continue;
             }
 
+            $publishedAt = $this->publishedAt($entry);
+
+            if ($publishedAt === null || $publishedAt < $cutoff) {
+                $summary['too_old']++;
+
+                continue;
+            }
+
             if (NewsArticle::where('url', $url)->exists()) {
                 $summary['duplicates']++;
 
@@ -81,7 +91,7 @@ class NewsFetcher
                 'title' => $title,
                 'url' => $url,
                 'excerpt' => $this->cleanExcerpt($entry->getDescription()),
-                'published_at' => $this->publishedAt($entry),
+                'published_at' => $publishedAt,
                 'status' => ArticleStatus::New,
             ]);
 

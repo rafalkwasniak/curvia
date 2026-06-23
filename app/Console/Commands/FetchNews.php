@@ -16,8 +16,8 @@ class FetchNews extends Command
         $s = $fetcher->fetch();
 
         $this->info(sprintf(
-            'Źródła: %d | nowe: %d | odfiltrowane: %d | duplikaty: %d | błędy: %d',
-            $s['sources'], $s['created'], $s['filtered'], $s['duplicates'], $s['errors'],
+            'Źródła: %d | nowe: %d | odfiltrowane: %d | za stare: %d | duplikaty: %d | błędy: %d',
+            $s['sources'], $s['created'], $s['filtered'], $s['too_old'], $s['duplicates'], $s['errors'],
         ));
 
         return self::SUCCESS;
