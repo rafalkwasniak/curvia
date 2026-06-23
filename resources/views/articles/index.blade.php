@@ -17,6 +17,7 @@
                 <th class="px-4 py-3 font-medium">{{ __('Title') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Date') }}</th>
+                <th class="px-4 py-3 font-medium text-right">{{ __('Actions') }}</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -44,10 +45,25 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $article->published_at?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="px-4 py-3 text-right">
+                        @if ($article->status !== \App\Enums\ArticleStatus::Published)
+                            <form action="{{ route('articles.reject', $article) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                    title="{{ __('Reject') }}"
+                                    aria-label="{{ __('Reject') }}"
+                                    class="rounded-md p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7.5h12M9.5 7.5V6a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 6v1.5m-7 0 .7 11a1.5 1.5 0 0 0 1.5 1.4h4.6a1.5 1.5 0 0 0 1.5-1.4l.7-11" />
+                                    </svg>
+                                </button>
+                            </form>
+                        @endif
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="px-4 py-6 text-center text-gray-500">{{ __('No generated posts yet.') }}</td>
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">{{ __('No generated posts yet.') }}</td>
                 </tr>
             @endforelse
         </tbody>
