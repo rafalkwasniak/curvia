@@ -6,6 +6,7 @@ use App\Enums\ArticleStatus;
 use App\Models\NewsArticle;
 use App\Services\FacebookPublisher;
 use App\Services\FacebookWindowScheduler;
+use Carbon\CarbonInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -25,15 +26,12 @@ class PublishToFacebook extends Command
         }
 
         if (! $scheduler->isDue(now())) {
+            $this->warnIfWindowMissed($scheduler, now());
+
             return self::SUCCESS;
         }
 
-        $article = NewsArticle::where('status', ArticleStatus::Approved)
-            ->whereNotNull('ai_image_path')
-            ->whereNull('posted_at')
-            ->orderBy('published_at')
-            ->orderBy('id')
-            ->first();
+        $article = $this->oldestPublishable();
 
         if ($article === null) {
             return self::SUCCESS;
@@ -54,5 +52,38 @@ class PublishToFacebook extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * The oldest approved post that still has an image and has not gone out yet.
+     */
+    private function oldestPublishable(): ?NewsArticle
+    {
+        return NewsArticle::where('status', ArticleStatus::Approved)
+            ->whereNotNull('ai_image_path')
+            ->whereNull('posted_at')
+            ->orderBy('published_at')
+            ->orderBy('id')
+            ->first();
+    }
+
+    /**
+     * Leave a warning in the log when a publish window has just closed without
+     * sending while an approved post was still waiting - so a missed slot is
+     * visible immediately instead of needing a manual audit after the fact.
+     */
+    private function warnIfWindowMissed(FacebookWindowScheduler $scheduler, CarbonInterface $now): void
+    {
+        $window = $scheduler->recentlyMissedWindow($now);
+
+        if ($window === null || $this->oldestPublishable() === null) {
+            return;
+        }
+
+        Log::warning(sprintf(
+            'Facebook: okno %s-%s zamknięte bez publikacji, choć zatwierdzony wpis czekał w kolejce.',
+            $window[0]->format('H:i'),
+            $window[1]->format('H:i'),
+        ));
     }
 }

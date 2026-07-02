@@ -53,6 +53,13 @@ class FacebookWindowScheduler
      * Deterministic random minute inside the window for $now's date. Same date +
      * window always yields the same minute; different dates spread it out.
      *
+     * The offset stops one minute short of the window end: the window is closed
+     * the instant the clock passes the end minute (see currentWindow), while the
+     * cron fires a few seconds into each minute. A target landing on the very
+     * last minute would therefore leave a zero-width slot the cron never hits,
+     * silently dropping the post. Capping at span-1 always leaves a full minute
+     * for the once-a-minute run to catch the target.
+     *
      * @param  array{0: CarbonInterface, 1: CarbonInterface}  $window
      */
     public function targetMinute(CarbonInterface $now, array $window): CarbonInterface
@@ -61,10 +68,34 @@ class FacebookWindowScheduler
         $span = (int) $startAt->diffInMinutes($endAt);
 
         mt_srand((int) crc32($now->toDateString().'|'.$startAt->format('H:i')));
-        $offset = $span > 0 ? mt_rand(0, $span) : 0;
+        $offset = $span > 0 ? mt_rand(0, $span - 1) : 0;
         mt_srand(); // restore unseeded randomness for the rest of the request
 
         return $startAt->copy()->addMinutes($offset);
+    }
+
+    /**
+     * A window that closed within the last minute without anything going out, or
+     * null. Lets the caller flag a missed slot: on the first run after a window
+     * ends, if nothing was published in it, that window is returned exactly once.
+     *
+     * @return array{0: CarbonInterface, 1: CarbonInterface}|null
+     */
+    public function recentlyMissedWindow(CarbonInterface $now): ?array
+    {
+        foreach ((array) config('curvia.facebook.windows', []) as $window) {
+            [$start, $end] = $window;
+            $startAt = $now->copy()->setTimeFromTimeString($start)->startOfMinute();
+            $endAt = $now->copy()->setTimeFromTimeString($end)->startOfMinute();
+
+            if ($now->gt($endAt)
+                && $now->lte($endAt->copy()->addMinute())
+                && ! $this->alreadyPublishedInWindow($startAt, $now)) {
+                return [$startAt, $endAt];
+            }
+        }
+
+        return null;
     }
 
     private function alreadyPublishedInWindow(CarbonInterface $start, CarbonInterface $now): bool
