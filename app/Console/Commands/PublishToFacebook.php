@@ -15,7 +15,7 @@ class PublishToFacebook extends Command
 {
     protected $signature = 'curvia:publish-facebook';
 
-    protected $description = 'Publish the oldest approved post to Facebook within the configured time windows';
+    protected $description = 'Publish the newest approved post to Facebook within the configured time windows';
 
     public function handle(FacebookWindowScheduler $scheduler, FacebookPublisher $publisher): int
     {
@@ -31,7 +31,7 @@ class PublishToFacebook extends Command
             return self::SUCCESS;
         }
 
-        $article = $this->oldestPublishable();
+        $article = $this->newestPublishable();
 
         if ($article === null) {
             return self::SUCCESS;
@@ -55,15 +55,16 @@ class PublishToFacebook extends Command
     }
 
     /**
-     * The oldest approved post that still has an image and has not gone out yet.
+     * The newest approved post that still has an image and has not gone out yet,
+     * so fresh news goes out first and archival posts only when nothing newer waits.
      */
-    private function oldestPublishable(): ?NewsArticle
+    private function newestPublishable(): ?NewsArticle
     {
         return NewsArticle::where('status', ArticleStatus::Approved)
             ->whereNotNull('ai_image_path')
             ->whereNull('posted_at')
-            ->orderBy('published_at')
-            ->orderBy('id')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
             ->first();
     }
 
@@ -76,7 +77,7 @@ class PublishToFacebook extends Command
     {
         $window = $scheduler->recentlyMissedWindow($now);
 
-        if ($window === null || $this->oldestPublishable() === null) {
+        if ($window === null || $this->newestPublishable() === null) {
             return;
         }
 
