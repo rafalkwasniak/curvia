@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\ArticleStatus;
 use App\Models\NewsArticle;
 use App\Services\PostGenerator;
+use App\Services\PostScorer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -15,7 +16,7 @@ class GeneratePosts extends Command
 
     protected $description = 'Generate Polish Facebook posts from scraped articles via DeepSeek';
 
-    public function handle(PostGenerator $generator): int
+    public function handle(PostGenerator $generator, PostScorer $scorer): int
     {
         $articles = NewsArticle::where('status', ArticleStatus::New)
             ->whereNotNull('content')
@@ -33,6 +34,16 @@ class GeneratePosts extends Command
                 $article->ai_post = $generated['post'];
                 $article->status = ArticleStatus::WaitingReview;
                 $article->save();
+
+                // Score the fresh post against the taste profile so the review
+                // list shows its value straight away. A scoring failure (e.g. no
+                // profile yet) must never lose the generated post - swallow it,
+                // the scheduled score-posts backfill will retry later.
+                try {
+                    $scorer->scoreAndStore($article);
+                } catch (Throwable $e) {
+                    Log::warning("Post scoring failed for article {$article->id}: ".$e->getMessage());
+                }
 
                 $done++;
             } catch (Throwable $e) {

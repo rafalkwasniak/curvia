@@ -15,6 +15,7 @@
             <tr>
                 <th class="px-4 py-3 font-medium">{{ __('Image') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Title') }}</th>
+                <th class="px-4 py-3 font-medium">{{ __('AI score') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Status') }}</th>
                 <th class="px-4 py-3 font-medium">{{ __('Date') }}</th>
                 <th class="px-4 py-3 font-medium text-right">{{ __('Actions') }}</th>
@@ -40,6 +41,12 @@
                         </a>
                     </td>
                     <td class="px-4 py-3">
+                        <span class="inline-block rounded-full px-2 py-1 text-xs font-semibold tabular-nums {{ $article->scoreBadgeClasses() }}"
+                            @if ($article->ai_score_reason) title="{{ $article->ai_score_reason }}" @endif>
+                            {{ $article->ai_score !== null ? $article->ai_score.'/100' : '—' }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
                         <span class="rounded-full px-2 py-1 text-xs font-medium {{ $article->status->badgeClasses() }}">
                             {{ $article->status->label() }}
                         </span>
@@ -63,7 +70,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">{{ __('No generated posts yet.') }}</td>
+                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">{{ __('No generated posts yet.') }}</td>
                 </tr>
             @endforelse
         </tbody>

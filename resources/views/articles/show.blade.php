@@ -40,6 +40,19 @@
         </div>
         @if ($article->ai_post)
             <h3 class="mb-3 font-medium">{{ $article->ai_title }}</h3>
+            @if ($article->ai_score !== null)
+                <div class="mb-3 flex items-start gap-3 rounded-md border border-gray-200 p-3">
+                    <span class="shrink-0 rounded-full px-2.5 py-1 text-sm font-semibold tabular-nums {{ $article->scoreBadgeClasses() }}">
+                        {{ $article->ai_score }}/100
+                    </span>
+                    <div class="text-sm text-gray-600">
+                        <p class="font-medium text-gray-500">{{ __('AI score') }}</p>
+                        @if ($article->ai_score_reason)
+                            <p>{{ $article->ai_score_reason }}</p>
+                        @endif
+                    </div>
+                </div>
+            @endif
             <div class="whitespace-pre-line rounded-md bg-gray-50 p-4 text-sm text-gray-800">{{ $article->ai_post }}</div>
         @else
             <p class="text-sm text-gray-500">{{ __('Not generated yet.') }}</p>

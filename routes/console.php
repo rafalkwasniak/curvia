@@ -17,5 +17,9 @@ Schedule::command('curvia:fetch-news')->hourly()->withoutOverlapping();
 Schedule::command('curvia:fetch-content --limit=1')->everyMinute()->withoutOverlapping();
 Schedule::command('curvia:generate-posts --limit=1')->everyMinute()->withoutOverlapping();
 
+// Backfill AI quality scores for any posts still unscored (historical backlog
+// or posts whose inline scoring failed). Informational only - publishes nothing.
+Schedule::command('curvia:score-posts --limit=5')->everyMinute()->withoutOverlapping();
+
 // Auto-publish approved posts to Facebook at one random minute per time window.
 Schedule::command('curvia:publish-facebook')->everyMinute()->withoutOverlapping();

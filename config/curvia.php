@@ -59,6 +59,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI post scoring (taste profile)
+    |--------------------------------------------------------------------------
+    |
+    | A generated post is scored 0-100 for how well it fits Rafał's taste,
+    | learned from his own publish/reject history and distilled into an editable
+    | Markdown "taste profile" (stored under storage/app). For now the score is
+    | INFORMATIONAL ONLY - shown in the panel, nothing is published on its basis.
+    |
+    */
+
+    'scoring' => [
+        'profile_path' => 'taste-profile.md',
+        // How many published vs rejected posts to sample when distilling the
+        // profile, per class. Low temperature keeps scoring stable and repeatable.
+        'example_chars' => 500,
+        'profile_temperature' => 0.4,
+        'temperature' => 0.2,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AI image generation
     |--------------------------------------------------------------------------
     |
