@@ -43,7 +43,7 @@ return [
     'deepseek' => [
         'key' => env('DEEPSEEK_API_KEY'),
         'base_url' => 'https://api.deepseek.com',
-        'model' => 'deepseek-chat',
+        'model' => 'deepseek-v4-flash',
     ],
 
     'replicate' => [
