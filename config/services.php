@@ -44,6 +44,10 @@ return [
         'key' => env('DEEPSEEK_API_KEY'),
         'base_url' => 'https://api.deepseek.com',
         'model' => 'deepseek-v4-flash',
+        // Reasoning models think before answering; without this parameter
+        // deepseek-v4-flash defaults to HEAVY reasoning (2x slower, thousands
+        // of thinking tokens per call — measured in the Kramio project).
+        'reasoning_effort' => 'low',
     ],
 
     'replicate' => [

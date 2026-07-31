@@ -23,6 +23,8 @@ class DeepSeekClient
                 'messages' => $messages,
                 'temperature' => $temperature,
                 'response_format' => ['type' => 'json_object'],
+                // Curb the thinking phase; see config/services.php.
+                'reasoning_effort' => config('services.deepseek.reasoning_effort'),
             ])
             ->throw()
             ->json();
