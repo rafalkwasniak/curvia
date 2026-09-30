@@ -12,6 +12,15 @@ class FetchNewsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The fixture feed has fixed pubDates; pin "now" next to them so the
+        // max-article-age filter keeps them regardless of the real date.
+        $this->travelTo('2026-06-20 12:00:00');
+    }
+
     private function feedXml(): string
     {
         return <<<'XML'
