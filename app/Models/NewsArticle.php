@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'rss_source_id', 'source_name', 'title', 'url', 'excerpt',
-    'content', 'published_at', 'ai_title', 'ai_post',
+    'content', 'scrape_attempts', 'published_at', 'ai_title', 'ai_post',
     'ai_image_path', 'ai_image_prompt', 'ai_score', 'ai_score_reason',
     'scored_at', 'posted_at', 'status',
 ])]
@@ -25,6 +25,7 @@ class NewsArticle extends Model
             'posted_at' => 'datetime',
             'scored_at' => 'datetime',
             'ai_score' => 'integer',
+            'scrape_attempts' => 'integer',
             'status' => ArticleStatus::class,
         ];
     }

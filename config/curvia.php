@@ -28,6 +28,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum scrape attempts
+    |--------------------------------------------------------------------------
+    |
+    | How many times the scheduled fetch tries to scrape an article before
+    | giving up on it (403, timeout, too-short body). Given-up articles stay
+    | "new" so they can still be generated manually from the panel.
+    |
+    */
+
+    'max_scrape_attempts' => 3,
+
+    /*
+    |--------------------------------------------------------------------------
     | Maximum article age
     |--------------------------------------------------------------------------
     |

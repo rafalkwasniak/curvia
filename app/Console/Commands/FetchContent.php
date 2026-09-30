@@ -17,8 +17,13 @@ class FetchContent extends Command
 
     public function handle(ArticleScraper $scraper): int
     {
+        // Skip articles that keep failing and try the least-attempted first, so
+        // a single blocked page cannot stall everything queued behind it.
         $articles = NewsArticle::whereNull('content')
             ->where('status', ArticleStatus::New)
+            ->where('scrape_attempts', '<', (int) config('curvia.max_scrape_attempts', 3))
+            ->orderBy('scrape_attempts')
+            ->orderBy('id')
             ->limit((int) $this->option('limit'))
             ->get();
 
@@ -38,6 +43,7 @@ class FetchContent extends Command
                 $article->save();
                 $done++;
             } else {
+                $article->increment('scrape_attempts');
                 $failed++;
             }
         }

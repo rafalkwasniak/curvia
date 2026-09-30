@@ -66,6 +66,52 @@ class FetchContentTest extends TestCase
         $this->assertNull($article->refresh()->content);
     }
 
+    public function test_failed_scrapes_are_counted(): void
+    {
+        $blocked = $this->makeArticle('https://site.test/blocked');
+        $short = $this->makeArticle('https://site.test/stub');
+        Http::fake([
+            'https://site.test/blocked' => Http::response('Forbidden', 403),
+            'https://site.test/stub' => Http::response('<html><body><p>Too short.</p></body></html>'),
+        ]);
+
+        $this->artisan('curvia:fetch-content');
+
+        $this->assertSame(1, $blocked->refresh()->scrape_attempts);
+        $this->assertSame(1, $short->refresh()->scrape_attempts);
+    }
+
+    public function test_a_blocked_article_does_not_stall_the_queue(): void
+    {
+        $blocked = $this->makeArticle('https://site.test/blocked');
+        $good = $this->makeArticle('https://site.test/review');
+        Http::fake([
+            'https://site.test/blocked' => Http::response('Forbidden', 403),
+            'https://site.test/review' => Http::response($this->articleHtml()),
+        ]);
+
+        // Paced like the scheduler: one article per run.
+        $this->artisan('curvia:fetch-content --limit=1');
+        $this->artisan('curvia:fetch-content --limit=1');
+
+        $this->assertSame(1, $blocked->refresh()->scrape_attempts);
+        $this->assertNotNull($good->refresh()->content);
+    }
+
+    public function test_articles_are_given_up_after_max_attempts(): void
+    {
+        config(['curvia.max_scrape_attempts' => 3]);
+        $article = $this->makeArticle('https://site.test/blocked');
+        $article->scrape_attempts = 3;
+        $article->save();
+        Http::fake();
+
+        $this->artisan('curvia:fetch-content')->assertSuccessful();
+
+        Http::assertNothingSent();
+        $this->assertSame(ArticleStatus::New, $article->refresh()->status);
+    }
+
     public function test_it_skips_articles_that_already_have_content(): void
     {
         $article = $this->makeArticle('https://site.test/has-content');
