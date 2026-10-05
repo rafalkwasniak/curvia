@@ -112,6 +112,32 @@ class FetchContentTest extends TestCase
         $this->assertSame(ArticleStatus::New, $article->refresh()->status);
     }
 
+    public function test_the_last_failed_attempt_marks_the_article_as_scrape_failed(): void
+    {
+        config(['curvia.max_scrape_attempts' => 3]);
+        $article = $this->makeArticle('https://site.test/blocked');
+        $article->scrape_attempts = 2;
+        $article->save();
+        Http::fake(['https://site.test/blocked' => Http::response('Forbidden', 403)]);
+
+        $this->artisan('curvia:fetch-content')->assertSuccessful();
+
+        $article->refresh();
+        $this->assertSame(3, $article->scrape_attempts);
+        $this->assertSame(ArticleStatus::ScrapeFailed, $article->status);
+    }
+
+    public function test_a_failure_with_attempts_left_keeps_the_article_new(): void
+    {
+        config(['curvia.max_scrape_attempts' => 3]);
+        $article = $this->makeArticle('https://site.test/blocked');
+        Http::fake(['https://site.test/blocked' => Http::response('Forbidden', 403)]);
+
+        $this->artisan('curvia:fetch-content');
+
+        $this->assertSame(ArticleStatus::New, $article->refresh()->status);
+    }
+
     public function test_it_skips_articles_that_already_have_content(): void
     {
         $article = $this->makeArticle('https://site.test/has-content');

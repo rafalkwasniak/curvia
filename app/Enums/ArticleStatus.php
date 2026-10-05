@@ -9,6 +9,7 @@ enum ArticleStatus: string
     case Approved = 'approved';
     case Published = 'published';
     case Rejected = 'rejected';
+    case ScrapeFailed = 'scrape_failed';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum ArticleStatus: string
             self::Approved => 'Zaakceptowany',
             self::Published => 'Opublikowany',
             self::Rejected => 'Odrzucony',
+            self::ScrapeFailed => 'Nie udało się pobrać',
         };
     }
 
@@ -28,6 +30,7 @@ enum ArticleStatus: string
             self::Approved => 'bg-green-100 text-green-800',
             self::Published => 'bg-blue-100 text-blue-800',
             self::Rejected => 'bg-red-100 text-red-700',
+            self::ScrapeFailed => 'bg-orange-100 text-orange-800',
             default => 'bg-gray-100 text-gray-600',
         };
     }

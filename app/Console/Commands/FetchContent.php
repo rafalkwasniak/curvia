@@ -19,9 +19,11 @@ class FetchContent extends Command
     {
         // Skip articles that keep failing and try the least-attempted first, so
         // a single blocked page cannot stall everything queued behind it.
+        $maxAttempts = (int) config('curvia.max_scrape_attempts', 3);
+
         $articles = NewsArticle::whereNull('content')
             ->where('status', ArticleStatus::New)
-            ->where('scrape_attempts', '<', (int) config('curvia.max_scrape_attempts', 3))
+            ->where('scrape_attempts', '<', $maxAttempts)
             ->orderBy('scrape_attempts')
             ->orderBy('id')
             ->limit((int) $this->option('limit'))
@@ -43,7 +45,15 @@ class FetchContent extends Command
                 $article->save();
                 $done++;
             } else {
-                $article->increment('scrape_attempts');
+                $article->scrape_attempts++;
+
+                // Out of attempts: flag it so the list shows the source is
+                // unreachable instead of leaving it looking freshly queued.
+                if ($article->scrape_attempts >= $maxAttempts) {
+                    $article->status = ArticleStatus::ScrapeFailed;
+                }
+
+                $article->save();
                 $failed++;
             }
         }
