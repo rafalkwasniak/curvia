@@ -175,10 +175,10 @@ return [
         'motogp', 'moto2', 'moto3', 'wsbk', 'superbikes', 'dakar', 'isle of man', 'tt race',
         // Brands
         'ducati', 'ktm', 'kawasaki', 'yamaha', 'honda', 'suzuki', 'triumph', 'aprilia',
-        'harley', 'harley-davidson', 'bmw motorrad', 'royal enfield', 'mv agusta',
+        'harley', 'harley-davidson', 'bmw', 'royal enfield', 'mv agusta',
         'husqvarna', 'indian motorcycle', 'moto guzzi', 'benelli', 'cfmoto', 'cf moto',
         'zero motorcycles', 'energica', 'vespa', 'piaggio', 'norton', 'bimota', 'gasgas',
-        'gas gas', 'beta', 'sherco', 'can-am',
+        'gas gas', 'beta', 'sherco', 'can-am', 'jawa',
     ],
 
 ];

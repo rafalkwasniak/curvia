@@ -25,6 +25,8 @@ class MotorcycleFilterTest extends TestCase
             'two-stroke + motogp' => ['This Tiny Two-Stroke Is A Reminder Of How MotoGP Champions Used To Get Their Start'],
             'brand in name' => ['Indian Motorcycle adds Holywood Service Station to growing UK network'],
             'ducati' => ['Ducati\'s past rolls back into Misano for WDW 2026'],
+            'bmw model name' => ['BMW R nineT by FCR Original.'],
+            'jawa' => ['Jawa 350 Restomod from Slovakia.'],
             'generic word' => ['First ride: the new adventure bike everyone is talking about'],
         ];
     }
